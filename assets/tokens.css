@@ -1,0 +1,201 @@
+/* ============================================================
+   huein-lightfield-ui-style · assets/tokens.css
+   来自 绘影工作台 hueinbench（自媒体工作室管理系统，AGPL-3.0）。
+   本仓库以 **MIT** 授权（见根目录 LICENSE）—— 作者同为绘影工作台的作者，
+   故同一份代码在此按 MIT 另行授权，可直接抄进你的项目。
+   ============================================================ */
+
+/* ============================================================
+   绘影工作台 hueinbench · 设计 token
+   绘影社 HUEINMEDIA · 扣子  |  AGPL-3.0-or-later
+   ------------------------------------------------------------
+   只暴露一个可配置参数：--brand-hue（0-360）。
+   其余所有颜色都由它按固定偏移派生 —— 换一个色相，
+   整个光场会**协调地**换色，不会出现一堆互相打架的颜色。
+
+   暗色是主场景（剪辑、审片、深夜排期），浅色是白天场景。
+   两套独立调校，不是自动反色：
+     浅色下光场 chroma 降一档、玻璃换实色、文字加粗。
+   ============================================================ */
+
+:root {
+  /* ---- 唯一的手法入口 ---- */
+  --brand-hue: 285;
+  --neutral-hue: var(--brand-hue);        /* 中性色掺品牌色相，而不是死灰 */
+  --warm-hue: calc(var(--brand-hue) + 160); /* 浅色主题用的暖调中性：285 → 85 */
+
+  /* ---- 三层光场的色相（由主色相派生）---- */
+  /* 285 靛 → 主光 350 品红（+65） / 补光 68 琥珀（+143） / 冷光 275 靛紫（-10）
+     第三层刻意**只偏 -10**，让它和品牌色同族。
+     早先写的 -75（→210 青蓝）会让画面变成「品红和青蓝两种颜色在打架」，
+     与设计方案里的 275 对不上，观感发脏。 */
+  --lx-a-hue: calc(var(--brand-hue) + 65);
+  --lx-b-hue: calc(var(--brand-hue) + 143);
+  --lx-c-hue: calc(var(--brand-hue) - 10);
+
+  /* ---- 间距（固定阶梯，不用流体排版）---- */
+  --sp-1: 4px;   --sp-2: 8px;   --sp-3: 12px;  --sp-4: 16px;
+  --sp-5: 24px;  --sp-6: 32px;  --sp-7: 48px;  --sp-8: 64px;
+
+  /* ---- 圆角 ---- */
+  --r-1: 6px;  --r-2: 10px;  --r-3: 14px;  --r-4: 20px;  --r-pill: 999px;
+
+  /* ---- 字号（固定 rem 阶梯）---- */
+  --f-xs: 0.6875rem;  /* 11px 微标签 */
+  --f-sm: 0.8125rem;  /* 13px 辅助 */
+  --f-md: 0.9375rem;  /* 15px 正文 */
+  --f-lg: 1.0625rem;  /* 17px 小标题 */
+  --f-xl: 1.375rem;   /* 22px 标题 */
+  --f-2xl: 1.75rem;   /* 28px 页面标题 */
+  --f-3xl: 2.25rem;   /* 36px 数字 */
+
+  /* ---- 动效：只动 transform 与 opacity，绝不回弹 ---- */
+  --dur-1: 120ms;  --dur-2: 220ms;  --dur-3: 420ms;
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---- 语义色 ---- */
+  --ok-hue: 155;
+  --warn-hue: 78;
+  --danger-hue: 22;
+}
+
+/* ============================================================
+   暗色（默认）—— 剪辑台、审片室、深夜排期
+   ============================================================ */
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg:         oklch(11.5% 0.018 var(--neutral-hue));
+  --bg-deep:    oklch(8.5% 0.020 var(--neutral-hue));
+  --surface:    oklch(16.5% 0.020 var(--neutral-hue));
+  --surface-2:  oklch(20.5% 0.022 var(--neutral-hue));
+  --surface-3:  oklch(25% 0.024 var(--neutral-hue));
+  --line:       oklch(100% 0 0 / 0.075);
+  --line-soft:  oklch(100% 0 0 / 0.045);
+
+  --text:    oklch(97% 0.006 var(--neutral-hue));
+  --text-2:  oklch(80% 0.012 var(--neutral-hue));
+  --text-3:  oklch(62% 0.014 var(--neutral-hue));
+  --text-4:  oklch(48% 0.014 var(--neutral-hue));
+
+  /* 光场三层 —— 色值与浓度**直接对齐设计方案**：
+       主光 oklch(68% 0.24 350 / .30)
+       补光 oklch(79% 0.15  68 / .22)
+       冷光 oklch(66% 0.19 275 / .26)
+     strength 只当总开关用（prefers-reduced-motion 时才归零），
+     平时的浓度由上面的 alpha 决定 —— 这两者相乘，别重复打折。 */
+  --lx-a: oklch(68% 0.24 var(--lx-a-hue));
+  --lx-b: oklch(79% 0.15 var(--lx-b-hue));
+  --lx-c: oklch(66% 0.19 var(--lx-c-hue));
+
+  --lx-a-soft: oklch(68% 0.24 var(--lx-a-hue) / 0.30);
+  --lx-b-soft: oklch(79% 0.15 var(--lx-b-hue) / 0.22);
+  --lx-c-soft: oklch(66% 0.19 var(--lx-c-hue) / 0.26);
+
+  --lx-a-strength: 1;
+  --lx-b-strength: 1;
+  --lx-c-strength: 1;
+
+  --accent:      oklch(72% 0.19 var(--brand-hue));
+  --accent-weak: oklch(72% 0.19 var(--brand-hue) / 0.16);
+
+  --ok:     oklch(74% 0.16 var(--ok-hue));
+  --warn:   oklch(82% 0.15 var(--warn-hue));
+  --danger: oklch(70% 0.20 var(--danger-hue));
+
+  /* 玻璃：暗色下真的可以半透明，背后有光场可透 */
+  --glass-bg: oklch(20% 0.022 var(--neutral-hue) / 0.55);
+  --glass-bg-strong: oklch(19% 0.022 var(--neutral-hue) / 0.86);
+  --glass-border: oklch(100% 0 0 / 0.09);
+  --glass-blur: 18px;
+
+  --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.4);
+  --shadow-2: 0 12px 32px -12px oklch(0% 0 0 / 0.6);
+  --weight-strong: 500;
+}
+
+/* ============================================================
+   浅色 —— 白天场景。**不是暗色反色**，是重新调过的一套
+   ============================================================ */
+[data-theme='light'] {
+  color-scheme: light;
+
+  --neutral-hue: var(--warm-hue);
+
+  --bg:         oklch(97.5% 0.008 var(--neutral-hue));
+  --bg-deep:    oklch(94.5% 0.010 var(--neutral-hue));
+  --surface:    oklch(100% 0 0);
+  --surface-2:  oklch(98% 0.006 var(--neutral-hue));
+  --surface-3:  oklch(95.5% 0.008 var(--neutral-hue));
+  --line:       oklch(0% 0 0 / 0.085);
+  --line-soft:  oklch(0% 0 0 / 0.05);
+
+  --text:    oklch(23% 0.022 var(--neutral-hue));
+  --text-2:  oklch(42% 0.020 var(--neutral-hue));
+  --text-3:  oklch(55% 0.016 var(--neutral-hue));
+  --text-4:  oklch(66% 0.014 var(--neutral-hue));
+
+  /* 浅色下 chroma 降一档：白底上高彩度会刺眼。色值对齐设计方案。
+     浓度比方案（.20/.16/.17）**略高一档** ——
+     方案是文档页（纯背景 + 文字），光场直接可见；
+     工作台是卡片密集型，光只从卡片的缝隙和页面边缘透出来，
+     照搬方案的浓度会几乎看不见，「光场」这条设计语言就失效了。 */
+  --lx-a: oklch(60% 0.21 var(--lx-a-hue));
+  --lx-b: oklch(70% 0.14 var(--lx-b-hue));
+  --lx-c: oklch(56% 0.17 var(--lx-c-hue));
+
+  --lx-a-soft: oklch(60% 0.21 var(--lx-a-hue) / 0.26);
+  --lx-b-soft: oklch(70% 0.14 var(--lx-b-hue) / 0.21);
+  --lx-c-soft: oklch(56% 0.17 var(--lx-c-hue) / 0.22);
+
+  --lx-a-strength: 1;
+  --lx-b-strength: 1;
+  --lx-c-strength: 1;
+
+  --accent:      oklch(52% 0.19 var(--brand-hue));
+  --accent-weak: oklch(52% 0.19 var(--brand-hue) / 0.10);
+
+  --ok:     oklch(52% 0.15 var(--ok-hue));
+  --warn:   oklch(60% 0.15 var(--warn-hue));
+  --danger: oklch(54% 0.20 var(--danger-hue));
+
+  /* 玻璃：浅色下不能太透，否则白底上会变成一团灰雾。
+     但 0.92 又太实 —— 卡片会把身后的光场完全挡掉，页面看起来就是一片死白。
+     0.86 是实测的平衡点：光能透出来，卡片本身仍然干净。 */
+  --glass-bg: oklch(100% 0 0 / 0.86);
+  --glass-bg-strong: oklch(100% 0 0 / 0.95);
+  --glass-border: oklch(0% 0 0 / 0.08);
+  --glass-blur: 0px;
+
+  --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.06);
+  --shadow-2: 0 10px 28px -14px oklch(0% 0 0 / 0.22);
+  /* 浅色下文字加粗：细字在白底上比黑底更虚 */
+  --weight-strong: 600;
+}
+
+/* ============================================================
+   降级：浏览器不支持 backdrop-filter 就换实色，别让卡片糊成一片
+   ============================================================ */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-bg: oklch(18% 0.022 var(--neutral-hue) / 0.94);
+    --glass-bg-strong: oklch(17% 0.022 var(--neutral-hue) / 0.98);
+  }
+
+  [data-theme='light'] {
+    --glass-bg: oklch(100% 0 0 / 0.97);
+    --glass-bg-strong: oklch(100% 0 0 / 1);
+  }
+}
+
+/* ============================================================
+   无障碍：系统设了「减少动态效果」，光场整个停掉
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-1: 0ms;  --dur-2: 0ms;  --dur-3: 0ms;
+    --lx-a-strength: 0;  --lx-b-strength: 0;  --lx-c-strength: 0;
+  }
+}
